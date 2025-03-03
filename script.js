@@ -26,7 +26,7 @@ function init() {
     container.addChild(heart);
   }
 
-  var text = new createjs.Text("Привет моя маленькая принцесска)\nНадеюсь ты все так же мило улыбаешься\nи не забываешь находить даже\nмалые причины для счастья\nЖаль, я не достоин стать одной из них", "bold 34px Arial", "#312");
+  var text = new createjs.Text("Привет моя маленькая принцесска)\nНадеюсь ты все так же мило улыбаешься\nи не забываешь находить даже\nмалые причины для счастья\nЖаль, я не достоин стать одной из них", "bold 45px Arial", "#312");
   text.textAlign = "center";
   text.x = canvas.width / 2;
   text.y = canvas.height / 2 - text.getMeasuredLineHeight();
