@@ -26,10 +26,10 @@ function init() {
     container.addChild(heart);
   }
 
-  var text = new createjs.Text("Привет моя маленькая принцесска)\nНадеюсь ты все так же\n мило улыбаешься\nи не забываешь находить даже\nмалые причины для счастья\nЖаль,\n я не достоин стать одной из них", "bold 55px Arial", "#312");
+  var text = new createjs.Text("Привет моя маленькая принцесска)\nНадеюсь ты все так же\n мило улыбаешься\nи не забываешь находить даже\nмалые причины для счастья\nК сожалению,\n я не достоин стать одной из них", "bold 55px Arial", "#312");
   text.textAlign = "center";
   text.x = canvas.width / 2;
-  text.y = canvas.height / 2 - text.getMeasuredLineHeight();
+  text.y = canvas.height / 2 - text.getMeasuredLineHeight() - 200; 
   stage.addChild(text);
 
   for (i = 0; i < 100; i++) {
