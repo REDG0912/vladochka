@@ -26,7 +26,7 @@ function init() {
     container.addChild(heart);
   }
 
-  var text = new createjs.Text("с каждым закатом)\nи расветом\nтвоя улыбка кажеться\nтеплее сонца\nкак бы ярко оно не сияло\nСолнцу так же далеко до земли\nкак и мне до твоего сердца", "bold 55px Arial", "#312");
+  var text = new createjs.Text("с каждым закатом)\nи расветом\nтвоя улыбка кажеться\nтеплее солнца\nкак бы ярко оно не сияло\nСолнцу так же далеко до земли\nкак и мне до твоего сердца", "bold 55px Arial", "#312");
   text.textAlign = "center";
   text.x = canvas.width / 2;
   text.y = canvas.height / 2 - text.getMeasuredLineHeight() - 200; 
