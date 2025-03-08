@@ -32,7 +32,7 @@ function init() {
     spawnHeart();
   }
 
-  textObj = new createjs.Text("", "bold 50px Arial", "#324f72");
+  textObj = new createjs.Text("", "bold 50px Arial", "#ccbaf4");
   textObj.textAlign = "center";
   textObj.x = canvas.width / 2;
   textObj.y = canvas.height / 2 - 200;
