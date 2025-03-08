@@ -3,6 +3,13 @@ var stage;
 var container;
 var captureContainers;
 var captureIndex;
+var rainContainer;
+var textObj;
+var fullText = "Gib uns Zeit, gib uns Zeit\nBevor meine Welt in dir zerbricht\nUnd vielleicht, vielleicht, vielleicht\nDenkst du auch mal an mich\nGib uns Zeit, gib uns Zeit\nBevor meine Welt in dir zerbricht";
+var currentText = "";
+var textIndex = 0;
+var textSpeed = 15000 / fullText.length;
+var stopSpawningHearts = false; 
 
 function init() {
   canvas = document.getElementById("testCanvas");
@@ -11,6 +18,10 @@ function init() {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
 
+  var background = new createjs.Shape();
+  background.graphics.beginFill("#0a0a0a").drawRect(0, 0, canvas.width, canvas.height);
+  stage.addChild(background);
+
   container = new createjs.Container();
   stage.addChild(container);
 
@@ -18,19 +29,28 @@ function init() {
   captureIndex = 0;
 
   for (var i = 0; i < 100; i++) {
-    var heart = new createjs.Shape();
-    heart.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 30 - 45, 100, 50 + Math.random() * 30));
-    heart.graphics.moveTo(0, -12).curveTo(1, -20, 8, -20).curveTo(16, -20, 16, -10).curveTo(16, 0, 0, 12);
-    heart.graphics.curveTo(-16, 0, -16, -10).curveTo(-16, -20, -8, -20).curveTo(-1, -20, 0, -12);
-    heart.y = -100;
-    container.addChild(heart);
+    spawnHeart();
   }
 
-  var text = new createjs.Text("с каждым закатом)\nи расветом\nтвоя улыбка кажеться\nтеплее солнца\nкак бы ярко оно не сияло\nСолнцу так же далеко до земли\nкак и мне до твоего сердца", "bold 55px Arial", "#312");
-  text.textAlign = "center";
-  text.x = canvas.width / 2;
-  text.y = canvas.height / 2 - text.getMeasuredLineHeight() - 200; 
-  stage.addChild(text);
+  textObj = new createjs.Text("", "bold 50px Arial", "#324f72");
+  textObj.textAlign = "center";
+  textObj.x = canvas.width / 2;
+  textObj.y = canvas.height / 2 - 200;
+  stage.addChild(textObj);
+
+  animateText();
+
+  rainContainer = new createjs.Container();
+  stage.addChild(rainContainer);
+
+  for (let i = 0; i < 100; i++) {
+    let drop = new createjs.Shape();
+    drop.graphics.beginFill("rgba(173,216,230,0.7)").drawRect(0, 0, 2, Math.random() * 20 + 10);
+    drop.x = Math.random() * canvas.width;
+    drop.y = Math.random() * canvas.height;
+    drop.velY = Math.random() * 5 + 2;
+    rainContainer.addChild(drop);
+  }
 
   for (i = 0; i < 100; i++) {
     var captureContainer = new createjs.Container();
@@ -40,33 +60,67 @@ function init() {
 
   createjs.Ticker.timingMode = createjs.Ticker.RAF;
   createjs.Ticker.on("tick", tick);
+
+  setTimeout(() => {
+    stopSpawningHearts = true;
+  }, 20000);
+}
+
+function animateText() {
+  if (textIndex < fullText.length) {
+    currentText += fullText[textIndex];
+    textObj.text = currentText;
+    textIndex++;
+    setTimeout(animateText, textSpeed);
+  }
+}
+
+// Функция для создания сердечек
+function spawnHeart() {
+  if (stopSpawningHearts) return;
+
+  var heart = new createjs.Shape();
+  heart.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 30 - 45, 100, 50 + Math.random() * 30));
+  heart.graphics.moveTo(0, -12).curveTo(1, -20, 8, -20).curveTo(16, -20, 16, -10).curveTo(16, 0, 0, 12);
+  heart.graphics.curveTo(-16, 0, -16, -10).curveTo(-16, -20, -8, -20).curveTo(-1, -20, 0, -12);
+
+  heart.x = Math.random() * canvas.width;
+  heart.y = Math.random() * -canvas.height;
+  heart.velY = Math.random() * 2 + 1;
+  heart.scaleX = heart.scaleY = Math.random() * 0.5 + 0.5;
+  heart.alpha = Math.random() * 0.75 + 0.25;
+
+  container.addChild(heart);
 }
 
 function tick(event) {
   captureIndex = (captureIndex + 1) % captureContainers.length;
-  stage.removeChildAt(0);
+  stage.removeChildAt(1);
   var captureContainer = captureContainers[captureIndex];
-  stage.addChildAt(captureContainer, 0);
+  stage.addChildAt(captureContainer, 1);
   captureContainer.addChild(container);
 
-  for (var i = 0, l = container.numChildren; i < l; i++) {
+  for (var i = 0; i < container.numChildren; i++) {
     var heart = container.getChildAt(i);
-    if (heart.y < -50) {
-      heart._x = Math.random() * canvas.width;
-      heart.y = canvas.height * (1 + Math.random()) + 50;
-      heart.perX = (1 + Math.random() * 2) * canvas.height;
-      heart.offX = Math.random() * canvas.height;
-      heart.ampX = heart.perX * 0.1 * (0.15 + Math.random());
-      heart.velY = -Math.random() * 2 - 1;
-      heart.scale = Math.random() * 2 + 1;
-      heart._rotation = Math.random() * 40 - 20;
-      heart.alpha = Math.random() * 0.75 + 0.05;
-      heart.compositeOperation = Math.random() < 0.33 ? "lighter" : "source-over";
+    heart.y += heart.velY;
+
+    if (heart.y > canvas.height) {
+      if (!stopSpawningHearts) {
+        heart.y = Math.random() * -50;
+        heart.x = Math.random() * canvas.width;
+      } else {
+        container.removeChild(heart);
+      }
     }
-    var int = (heart.offX + heart.y) / heart.perX * Math.PI * 2;
-    heart.y += heart.velY * heart.scaleX / 2;
-    heart.x = heart._x + Math.cos(int) * heart.ampX;
-    heart.rotation = heart._rotation + Math.sin(int) * 30;
+  }
+
+  for (let i = 0; i < rainContainer.numChildren; i++) {
+    let drop = rainContainer.getChildAt(i);
+    drop.y += drop.velY;
+    if (drop.y > canvas.height) {
+      drop.y = -10;
+      drop.x = Math.random() * canvas.width;
+    }
   }
 
   captureContainer.updateCache("source-over");
